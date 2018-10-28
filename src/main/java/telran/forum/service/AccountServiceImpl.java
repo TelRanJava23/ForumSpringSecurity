@@ -33,7 +33,7 @@ public class AccountServiceImpl implements AccountService {
 				.password(hashPassword)
 				.firstName(userRegDto.getFirstName())
 				.lastName(userRegDto.getLastName())
-				.role("User")
+				.role("ROLE_USER")
 				.expDate(LocalDateTime.now().plusDays(accountConfiguration.getExpPeriod()))
 				.build();
 		userRepository.save(userAccount);
@@ -49,20 +49,33 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public UserProfileDto removeUser(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		UserAccount userAccount = userRepository.findById(id).get();
+		userRepository.delete(userAccount);
+		return new UserProfileDto(userAccount.getId(), userAccount.getFirstName(), userAccount.getLastName());
 	}
 
 	@Override
 	public Set<String> addRole(String id, String role) {
-		// TODO Auto-generated method stub
-		return null;
+		UserAccount userAccount = userRepository.findById(id).orElse(null);
+		if (userAccount == null) {
+			return null;
+		}
+		Set<String> roles = userAccount.getRoles();
+		roles.add("ROLE_"+role.toUpperCase());
+		userRepository.save(userAccount);
+		return roles;
 	}
 
 	@Override
 	public Set<String> removeRole(String id, String role) {
-		// TODO Auto-generated method stub
-		return null;
+		UserAccount userAccount = userRepository.findById(id).orElse(null);
+		if (userAccount == null) {
+			return null;
+		}
+		Set<String> roles = userAccount.getRoles();
+		roles.remove("ROLE_"+role.toUpperCase());
+		userRepository.save(userAccount);
+		return roles;
 	}
 
 	@Override

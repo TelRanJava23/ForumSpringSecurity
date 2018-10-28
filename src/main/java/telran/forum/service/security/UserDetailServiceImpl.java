@@ -31,6 +31,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 	}
 
 	private String[] setToArray(Set<String> roles) {
+		//return roles.stream().toArray(String[]::new);
 		return roles.toArray(new String[0]);
 	}
 

@@ -3,6 +3,7 @@ package telran.forum.controller;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,16 +34,19 @@ public class AccountManagmentController {
 	}
 	
 	@DeleteMapping("/{id}")
+	@PreAuthorize("#id == authentication.name")
 	public UserProfileDto remove(@PathVariable String id) {
 		return accountService.removeUser(id);
 	}
 	
 	@PutMapping("/{id}/{role}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public Set<String> addRole(@PathVariable String id, @PathVariable String role) {
 		return accountService.addRole(id, role);
 	}
 	
 	@DeleteMapping("/{id}/{role}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public Set<String> removeRole(@PathVariable String id, @PathVariable String role) {
 		return accountService.removeRole(id, role);
 	}
