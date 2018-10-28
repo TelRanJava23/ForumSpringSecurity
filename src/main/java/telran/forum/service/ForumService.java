@@ -14,9 +14,9 @@ public interface ForumService {
 
 	Post getPost(String id);
 
-	Post removePost(String id);
+	Post removePost(String id, String login);
 
-	Post updatePost(PostUpdateDto updatePost);
+	Post updatePost(PostUpdateDto updatePost, String login);
 
 	boolean addLike(String id);
 

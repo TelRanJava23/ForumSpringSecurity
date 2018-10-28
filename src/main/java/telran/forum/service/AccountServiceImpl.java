@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import telran.forum.configuration.AccountConfiguration;
@@ -19,6 +20,9 @@ public class AccountServiceImpl implements AccountService {
 	
 	@Autowired
 	AccountConfiguration accountConfiguration;
+	
+	@Autowired
+	PasswordEncoder encoder;
 
 
 	@Override
@@ -26,8 +30,7 @@ public class AccountServiceImpl implements AccountService {
 		if (userRepository.existsById(userRegDto.getId())) {
 			throw new UserExistException();
 		}
-		String hashPassword = accountConfiguration
-				.getEncodePassword(userRegDto.getPassword());
+		String hashPassword = encoder.encode(userRegDto.getPassword());
 		UserAccount userAccount = UserAccount.builder()
 				.id(userRegDto.getId())
 				.password(hashPassword)

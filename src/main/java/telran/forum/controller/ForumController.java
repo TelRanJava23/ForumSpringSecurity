@@ -1,5 +1,6 @@
 package telran.forum.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,14 @@ public class ForumController {
 	}
 	
 	@DeleteMapping("/post/{id}")
-	public Post removePost(@PathVariable String id) {
-		return service.removePost(id);
+	public Post removePost(@PathVariable String id, Principal principal) {
+		return service.removePost(id, principal.getName());
 	}
 	
 	@PutMapping("/post")
-	public Post updatePost(@RequestBody PostUpdateDto postUpdateDto) {
-		return service.updatePost(postUpdateDto);
+	public Post updatePost(@RequestBody PostUpdateDto postUpdateDto,
+			Principal principal) {
+		return service.updatePost(postUpdateDto, principal.getName());
 	}
 	
 	@PutMapping("/post/{id}/like")

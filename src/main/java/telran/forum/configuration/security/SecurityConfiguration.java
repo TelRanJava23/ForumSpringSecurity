@@ -1,6 +1,7 @@
 package telran.forum.configuration.security;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -21,7 +22,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.httpBasic();
 		http.csrf().disable();
-		//http.authorizeRequests().anyRequest().authenticated();
+		http.authorizeRequests().antMatchers("/forum/post/*/like",
+				"/forum/post/*/comment", "/forum/posts/tags"
+				,"/forum/posts/period", "/forum/posts/author/*").hasRole("USER");
+		http.authorizeRequests().antMatchers(HttpMethod.POST,"/forum/post")
+		.hasRole("USER");
+		http.authorizeRequests().antMatchers(HttpMethod.GET,"/forum/post/*")
+		.hasRole("USER");
+		http.authorizeRequests().antMatchers(HttpMethod.DELETE,"/forum/post/*")
+		.hasAnyRole("USER", "MODERATOR");
+		http.authorizeRequests().antMatchers(HttpMethod.PUT,"/forum/post")
+		.hasAnyRole("USER", "ADMIN");
+		
 		
 	}
 }

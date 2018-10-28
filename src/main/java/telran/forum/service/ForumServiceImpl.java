@@ -2,13 +2,16 @@ package telran.forum.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import telran.forum.dao.ForumRepository;
+import telran.forum.dao.UserAccountRepository;
 import telran.forum.domain.Comment;
 import telran.forum.domain.Post;
+import telran.forum.domain.UserAccount;
 import telran.forum.dto.DatePeriodDto;
 import telran.forum.dto.NewCommentDto;
 import telran.forum.dto.NewPostDto;
@@ -19,6 +22,9 @@ public class ForumServiceImpl implements ForumService {
 
 	@Autowired
 	ForumRepository repository;
+	
+	@Autowired
+	UserAccountRepository accountRepository;
 	
 	@Override
 	public Post addNewPost(NewPostDto newPost) {
@@ -37,20 +43,30 @@ public class ForumServiceImpl implements ForumService {
 	}
 
 	@Override
-	public Post removePost(String id) {
+	public Post removePost(String id, String login) {
 		Post post = repository.findById(id).orElse(null);
 		if (post != null) {
-			repository.delete(post);
+			UserAccount account = accountRepository.findById(login).get();
+			Set<String> roles = account.getRoles();
+			if (roles.contains("ROLE_MODERATOR") ||
+					login.equals(post.getAuthor())) {
+				repository.delete(post);
+			}
 		}
 		return post;
 	}
 
 	@Override
-	public Post updatePost(PostUpdateDto updatePost) {
+	public Post updatePost(PostUpdateDto updatePost, String login) {
 		Post post = repository.findById(updatePost.getId()).orElse(null);
 		if (post != null) {
-			post.setContent(updatePost.getContent());
-			repository.save(post);
+			UserAccount account = accountRepository.findById(login).get();
+			Set<String> roles = account.getRoles();
+			if (roles.contains("ROLE_ADMIN") ||
+					login.equals(post.getAuthor())) {
+				post.setContent(updatePost.getContent());
+				repository.save(post);
+			}
 		}
 		return post;
 	}
