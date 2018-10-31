@@ -10,7 +10,7 @@ import telran.forum.dto.PostUpdateDto;
 
 public interface ForumService {
 
-	Post addNewPost(NewPostDto newPost);
+	Post addNewPost(NewPostDto newPost, String author);
 
 	Post getPost(String id);
 

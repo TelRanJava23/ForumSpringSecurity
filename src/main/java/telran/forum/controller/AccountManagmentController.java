@@ -1,5 +1,6 @@
 package telran.forum.controller;
 
+import java.security.Principal;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import telran.forum.dto.UserProfileDto;
 import telran.forum.dto.UserRegisterDto;
+import telran.forum.dto.UserUpdateDto;
 import telran.forum.service.AccountService;
 
 @RestController
@@ -29,12 +31,12 @@ public class AccountManagmentController {
 	}
 	
 	@PutMapping
-	public UserProfileDto edit(@RequestBody UserRegisterDto userRegisterDto) {
-		return accountService.editUser(userRegisterDto);
+	public UserProfileDto edit(@RequestBody UserUpdateDto userUptDto, Principal principal) {
+		return accountService.editUser(userUptDto, principal.getName());
 	}
 	
 	@DeleteMapping("/{id}")
-	@PreAuthorize("#id == authentication.name")
+	@PreAuthorize("#id == authentication.name or hasAnyRole('ADMIN', 'MODERATOR')")
 	public UserProfileDto remove(@PathVariable String id) {
 		return accountService.removeUser(id);
 	}
@@ -52,8 +54,9 @@ public class AccountManagmentController {
 	}
 	
 	@PutMapping("/password")
-	public void changePassword(@RequestHeader(value = "X-Password") String password) {
-		accountService.changePassword(password);
+	@PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'USER', 'EXPDATE')")
+	public void changePassword(@RequestHeader(value = "X-Password") String password, Principal principal) {
+		accountService.changePassword(password, principal.getName());
 	}
 
 }

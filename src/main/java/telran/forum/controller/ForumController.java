@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,8 +29,8 @@ public class ForumController {
 	ForumService service;
 	
 	@PostMapping("/post")
-	public Post addPost(@RequestBody NewPostDto newPost) {
-		return service.addNewPost(newPost);
+	public Post addPost(@RequestBody NewPostDto newPost, Principal principal) {
+		return service.addNewPost(newPost, principal.getName());
 	}
 	
 	@GetMapping("/post/{id}")
@@ -54,7 +55,9 @@ public class ForumController {
 	}
 	
 	@PutMapping("/post/{id}/comment")
-	public Post addComment(@PathVariable String id, @RequestBody NewCommentDto newCommentDto) {
+	@PreAuthorize("#newCommentDto.user == authentication.name and hasRole('USER')")
+	public Post addComment(@PathVariable String id,
+			@RequestBody NewCommentDto newCommentDto) {
 		return service.addComment(id, newCommentDto);
 	}
 	

@@ -27,14 +27,14 @@ public class ForumServiceImpl implements ForumService {
 	UserAccountRepository accountRepository;
 	
 	@Override
-	public Post addNewPost(NewPostDto newPost) {
-		Post post = convertToPost(newPost);
+	public Post addNewPost(NewPostDto newPost, String author) {
+		Post post = convertToPost(newPost, author);
 		repository.save(post);
 		return post;
 	}
 
-	private Post convertToPost(NewPostDto newPost) {
-		return new Post(newPost.getTitle(), newPost.getContent(), newPost.getAuthor(), newPost.getTags());
+	private Post convertToPost(NewPostDto newPost, String author) {
+		return new Post(newPost.getTitle(), newPost.getContent(), author, newPost.getTags());
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import telran.forum.dao.UserAccountRepository;
 import telran.forum.domain.UserAccount;
 import telran.forum.dto.UserProfileDto;
 import telran.forum.dto.UserRegisterDto;
+import telran.forum.dto.UserUpdateDto;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -45,9 +46,14 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public UserProfileDto editUser(UserRegisterDto userRegDto) {
+	public UserProfileDto editUser(UserUpdateDto userUptDto, String id) {
 		// TODO Auto-generated method stub
-		return null;
+		UserAccount userAccount = userRepository.findById(id).get();
+		userAccount.setFirstName(userUptDto.getFirstName());
+		userAccount.setLastName(userUptDto.getLastName());
+		userRepository.save(userAccount);
+		return new UserProfileDto(id,
+				userUptDto.getFirstName(), userUptDto.getLastName());
 	}
 
 	@Override
@@ -82,8 +88,14 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void changePassword(String password) {
+	public void changePassword(String password, String id) {
 		// TODO Auto-generated method stub
+		UserAccount userAccount = userRepository.findById(id).get();
+		String hashPassword = encoder.encode(password);
+		userAccount.setPassword(hashPassword);
+		userAccount.setExpDate(LocalDateTime.now()
+				.plusDays(accountConfiguration.getExpPeriod()));
+		userRepository.save(userAccount);
 
 	}
 
